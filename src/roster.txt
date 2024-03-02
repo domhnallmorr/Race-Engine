@@ -1,0 +1,35 @@
+Team: Red Bull, 90, 80, blue
+Driver1: Sebastian Vettel, 95, 85
+Driver2: Mark Webber, 90, 75
+
+Team: Ferrari, 85, 80, red
+Driver1: Fernando Alonso, 99, 90
+Driver2: Felipe Massa, 90, 70
+
+Team: McLaren, 95, 80, silver
+Driver1: Lewis Hamilton, 99, 80
+Driver2: Jenson Button, 90, 77
+
+Team: Mercedes, 78, 65, aqua
+Driver1: Nico Rosberg, 85, 72
+Driver2: Michael Schumacher, 80, 60
+
+Team: Renault, 80, 70, yellow
+Driver1: Robert Kubica, 90, 80
+Driver2: Vitaly Petrov, 70, 50
+
+Team: Williams, 72, 55, navy
+Driver1: Rubens Barrichello, 75, 65
+Driver2: Nico Hulkenberg, 66, 50
+
+Team: Force India, 72, 55, orange
+Driver1: Adrian Sutil, 75, 65
+Driver2: Vitantonio Liuzzi, 68, 48
+
+Team: Scuderia Toro Rosso, 65, 48, purple
+Driver1: Sebastien Buemi, 75, 65
+Driver2: Jaime Alguersuari, 70, 60
+
+Team: Sauber F1 Team, 70, 53, black
+Driver1: Pedro de la Rosa, 60, 55
+Driver2: Kamui Kobayashi, 78, 55
