@@ -4,7 +4,7 @@ from tkinter import *
 
 import customtkinter
 
-from race_engine_view import timing_screen
+from race_engine_view import timing_screen, race_engine_icons
 
 class RaceEngineView:
 	def __init__(self, controller, driver_names):
@@ -19,6 +19,8 @@ class RaceEngineView:
 
 		self.dark_bg = "#2b2b2b"
 		self.light_bg = "#333333"
+
+		race_engine_icons.setup_icons(self)
 		self.setup_windows()
 
 

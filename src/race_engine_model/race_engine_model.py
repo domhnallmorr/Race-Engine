@@ -96,11 +96,11 @@ class RaceEngineModel:
 		'''
 		setup pandas dataframe to track standings, assumes participants have been supplied in starting grid order!
 		'''
-		columns = ["Position", "Driver", "Team", "Lap", "Total Time", "Gap Ahead", "Gap to Leader", "Last Lap", "Status", "Lapped Status"] # all times in milliseconds
+		columns = ["Position", "Driver", "Team", "Lap", "Total Time", "Gap Ahead", "Gap to Leader", "Last Lap", "Status", "Lapped Status", "Pit", "Fastest Lap"] # all times in milliseconds
 
 		data = []
 		for participant in self.participants: 
-			data.append([participant.position, participant.name, "", 1, 0, 0, 0, 0, "running", None])
+			data.append([participant.position, participant.name, "", 1, 0, 0, 0, 0, "running", None, 0, 0])
 
 		self.standings_df = pd.DataFrame(columns=columns, data=data)
 
@@ -255,7 +255,13 @@ class RaceEngineModel:
 			
 			if row["Gap to Leader"] > self.circuit_model.base_laptime:
 				print(row)
-				self.standings_df.at[idx, "Lapped Status"] = "lapped"
+				self.standings_df.at[idx, "Lapped Status"] = f"lapped {int(row['Gap to Leader']/self.circuit_model.base_laptime)}" # add number of laps down to status
+
+			# UPDATE NUMBER OF PITSTOPS
+			self.standings_df.at[idx, "Pit"] = particpant_model.number_of_pitstops
+
+			# UPDATE FASTEST LAP
+			self.standings_df.at[idx, "Fastest Lap"] = particpant_model.fastest_laptime
 
 		self.log_event("\nCurrent Standings:\n" + self.standings_df.to_string(index=False))
 

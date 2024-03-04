@@ -14,7 +14,7 @@ class RaceEngineController:
 		self.update_timing_screen()
 
 	def update_timing_screen(self):
-		self.view.timing_screen.table.update(self.model.standings_df)
+		self.view.timing_screen.table.update(self.model.standings_df, None)
 
 	def start_race(self):
 		self.simulation_thread = threading.Thread(target=self.simulate_race)
@@ -31,10 +31,10 @@ class RaceEngineController:
 	def pause_resume(self):
 		if self.model.status == "running":
 			self.model.status = "paused"
-			self.view.timing_screen.start_btn.configure(text="Resume")
+			self.view.timing_screen.start_btn.configure(text="Resume", image=self.view.play_icon2)
 		elif self.model.status == "paused":
 			self.model.status = "running"
-			self.view.timing_screen.start_btn.configure(text="Pause")
+			self.view.timing_screen.start_btn.configure(text="Pause", image=self.view.pause_icon2)
 			self.start_race()
 			
 	def update_commentary(self, commentary):

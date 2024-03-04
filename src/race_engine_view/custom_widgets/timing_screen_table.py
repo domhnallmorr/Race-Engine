@@ -3,7 +3,7 @@ from tksheet import Sheet
 class TimingScreenTable(Sheet):
 	def __init__(self, parent, view):
 		self.view = view
-		self.headers = ["Name", "Gap", "Interval", "Last Lap"]
+		self.headers = ["Name", "Gap", "Interval", "Last Lap", "Fastest Lap", "Pit"]
 		
 		super().__init__(parent, headers=self.headers)
 
@@ -25,8 +25,9 @@ class TimingScreenTable(Sheet):
 		self.column_width(column=2, width=100, only_set_if_too_small=False, redraw=True)
 		self.column_width(column=3, width=100, only_set_if_too_small=False, redraw=True)
 
-	def update(self, standings_df, fastest_lap_times=[], retirements=[]):
+	def update(self, standings_df, race_fastest_laptime, fastest_lap_times=[], retirements=[]):
 		data = []
+		fastest_lap_driver = None
 
 		for idx, row in standings_df.iterrows():
 			if row["Status"] == "retired":
@@ -42,12 +43,19 @@ class TimingScreenTable(Sheet):
 				gap = ""
 			else:
 				interval = row["Gap Ahead"]/1000
-				if row["Lapped Status"] == "lapped":
-					gap = "+1"
+				if row["Lapped Status"] is not None:
+					if "lapped" in row["Lapped Status"]:
+						gap = f"+{row['Lapped Status'].split()[1]}"
 				else:
 					gap = row["Gap to Leader"]/1000
+
+			fastest_lap = self.view.milliseconds_to_minutes_seconds(row["Fastest Lap"])
+
+			# CHECK IF DRIVER JUST SET FASTEST LAP
+			if race_fastest_laptime == row["Last Lap"]:
+				fastest_lap_driver = row["Driver"]
 				
-			data.append([row["Driver"], gap, f'{interval}', last_lap])
+			data.append([row["Driver"], gap, f'{interval}', last_lap, fastest_lap, row["Pit"]])
 
 		self.set_sheet_data(data, redraw=False) # redraw=False to avoid flickering of table in view
 
@@ -56,7 +64,9 @@ class TimingScreenTable(Sheet):
 		for idx, driver in enumerate(standings_df["Driver"].values.tolist()):
 			self.highlight_cells(row=idx, column=1, fg="#f0e511") # make gap column yellow
 
-			if driver in fastest_lap_times:
+			if driver == fastest_lap_driver:
+				self.highlight_cells(row=idx, column=lap_col_idx, fg="#c034eb")
+			elif driver in fastest_lap_times:
 				self.highlight_cells(row=idx, column=lap_col_idx, fg="#54d426")
 			else:
 				self.highlight_cells(row=idx, column=lap_col_idx, fg="white")

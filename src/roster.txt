@@ -33,3 +33,15 @@ Driver2: Jaime Alguersuari, 70, 60
 Team: Sauber F1 Team, 70, 53, black
 Driver1: Pedro de la Rosa, 60, 55
 Driver2: Kamui Kobayashi, 78, 55
+
+Team: Lotus Racing Team, 35, 25, green
+Driver1: Jarno Trulli, 80, 55
+Driver2: Heikki Kovalainen, 70, 52
+
+Team: Hispania Racing F1 Team, 30, 20, grey
+Driver1: Karun Chandhok, 58, 50
+Driver2: Christian Klein, 64, 52
+
+Team: Virgin Racing, 35, 25, red
+Driver1: Timo Glock, 75, 55
+Driver2: Lucas di Grassi, 64, 52

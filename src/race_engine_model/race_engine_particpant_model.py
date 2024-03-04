@@ -13,6 +13,7 @@ class RaceEngineParticpantModel:
 		self.total_time = 0
 		self.pitstop_times = []
 		self.positions_by_lap = []
+		self.number_of_pitstops = 0
 
 		self.calculate_base_laptime()
 		self.calculate_pitstop_laps()
@@ -80,6 +81,7 @@ class RaceEngineParticpantModel:
 				self.laptime += self.circuit_model.pit_stop_loss
 				self.pitstop_times.append(random.randint(3_800, 6_000))
 				self.laptime += self.pitstop_times[-1] 
+				self.number_of_pitstops += 1
 
 	def complete_lap(self):
 		self.laptimes.append(self.laptime)
