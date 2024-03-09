@@ -122,8 +122,8 @@ class RaceEngineModel:
 	def advance(self):
 		
 		if self.status == "pre_race":
-			self.calculate_start()
 			self.commentary_to_process.append(commentary.gen_race_start_message())
+			self.calculate_start()
 			self.status = "running"
 
 		else:
@@ -210,8 +210,14 @@ class RaceEngineModel:
 					participant.complete_lap()
 
 	def calculate_start(self):
+		# Calculate Turn 1
+		order_after_turn1 = self.calculate_run_to_turn1()
+
+		# redefine particpants based on turn1 order
+		self.participants = [o[1] for o in order_after_turn1]
+
 		'''
-		just spread field out in starting order as first attempt
+		just spread field out after turn1
 		'''
 		for idx, p in enumerate(self.participants):
 			p.laptime = self.circuit_model.base_laptime + 6_000 + (idx * 1_000) + random.randint(100, 1500)
@@ -225,6 +231,24 @@ class RaceEngineModel:
 		self.fastest_laptime_lap = 1
 
 		self.current_lap += 1
+
+	def calculate_run_to_turn1(self):
+		dist_to_turn1 = self.circuit_model.dist_to_turn1
+		average_speed = 47.0 #m/s
+
+		order_after_turn1 = []
+		for idx, p in enumerate(self.participants):
+			random_factor = random.randint(-2000, 2000)/1000
+			time_to_turn1 = round(dist_to_turn1 / (average_speed + random_factor), 3)
+			order_after_turn1.append([time_to_turn1, p])
+			
+			dist_to_turn1 += 5 # add 5 meters per grid slot
+
+		order_after_turn1 = sorted(order_after_turn1, key=lambda x: x[0], reverse=False)
+
+		self.commentary_to_process.append(commentary.gen_lead_after_turn1_message(order_after_turn1[0][1].name))
+		
+		return order_after_turn1
 
 	def update_standings(self):
 		for driver in self.standings_df["Driver"]:

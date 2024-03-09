@@ -68,3 +68,10 @@ def gen_retirement_message(driver):
 	]
  
 	return random.choice(messages)
+
+def gen_lead_after_turn1_message(driver):
+	messages = [ 
+		f"{driver} leads the field out of turn 1!"
+	]
+	
+	return random.choice(messages)

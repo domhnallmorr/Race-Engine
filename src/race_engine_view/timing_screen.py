@@ -95,6 +95,10 @@ class TimingScreen(customtkinter.CTkFrame):
 		self.driver1_fuel_label = customtkinter.CTkLabel(self.driver1_frame, text="0.0kg")
 		self.driver1_fuel_label.grid(row=2, column=1, sticky="EW")
 
+		# LABELS FOR LAPTIMES PLOTS
+		customtkinter.CTkLabel(self.laptimes_frame, text="Driver 1", anchor=W).grid(row=0, column=1, sticky="EW", padx=self.view.padx, pady=self.view.pady)
+		customtkinter.CTkLabel(self.laptimes_frame, text="Driver 2 (Optional)", anchor=W).grid(row=0, column=3, sticky="EW", padx=self.view.padx, pady=self.view.pady)
+
 	def setup_buttons(self):
 		self.timing_button = customtkinter.CTkButton(self.button_frame, text="Timing", command=lambda window="timing": self.show_window(window), image=self.view.timing_icon2,  compound=LEFT, anchor="w")
 		self.timing_button.grid(row=0, column=0, sticky="EW", padx=self.view.padx, pady=self.view.pady)
@@ -109,8 +113,9 @@ class TimingScreen(customtkinter.CTkFrame):
 		self.table = timing_screen_table.TimingScreenTable(self.timing_frame, self.view)
 		self.table.pack(expand=True, fill=BOTH, side=LEFT)
 
+		combo_width = 300
 		# LAP TIMES COMBOS
-		self.driver1_laptime_combo = customtkinter.CTkComboBox(self.laptimes_frame, values=self.view.driver_names, command=self.update_laptimes_plot)
+		self.driver1_laptime_combo = customtkinter.CTkComboBox(self.laptimes_frame, values=self.view.driver_names, command=self.update_laptimes_plot, width=combo_width)
 		self.driver1_laptime_combo.grid(row=1, column=1, sticky="EW", padx=self.view.padx, pady=self.view.pady)
 		self.driver1_laptime_combo.set("Nico Rosberg")
 
@@ -118,7 +123,7 @@ class TimingScreen(customtkinter.CTkFrame):
 		self.driver2_laptime_checkbox = customtkinter.CTkCheckBox(self.laptimes_frame, text="", variable=self.driver2_laptime_var, onvalue="on", offvalue="off", width=10, command=self.update_laptimes_plot)
 		self.driver2_laptime_checkbox.grid(row=1, column=2, sticky="E", padx=(120, 5), pady=self.view.pady)
 
-		self.driver2_laptime_combo = customtkinter.CTkComboBox(self.laptimes_frame, values=self.view.driver_names, command=self.update_laptimes_plot)
+		self.driver2_laptime_combo = customtkinter.CTkComboBox(self.laptimes_frame, values=self.view.driver_names, command=self.update_laptimes_plot, width=combo_width)
 		self.driver2_laptime_combo.grid(row=1, column=3, sticky="EW", padx=(5, 5), pady=self.view.pady)
 		self.driver2_laptime_combo.set("Michael Schumacher")
 

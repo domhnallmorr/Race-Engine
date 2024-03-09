@@ -18,3 +18,7 @@ class RaceEngineCircuitModel:
 
 		self.pit_stop_loss = 20_000 #20s loss coming through pits
 
+		self.dist_to_turn1 = 615 # distance from pole to turn 1 in meters
+
+		
+
