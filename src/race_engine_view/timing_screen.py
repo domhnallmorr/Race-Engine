@@ -10,7 +10,7 @@ style.use('dark_background')
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from matplotlib.figure import Figure
 
-from race_engine_view.custom_widgets import timing_screen_table
+from race_engine_view.custom_widgets import timing_screen_table, strategy_editor
 
 class TimingScreen(customtkinter.CTkFrame):
 	def __init__(self, master, view):
@@ -44,6 +44,11 @@ class TimingScreen(customtkinter.CTkFrame):
 		self.player_frame.grid_columnconfigure(0, weight=1)
 		self.player_frame.grid_columnconfigure(1, weight=1)
 
+		# note, frames are used as seperators on the strategy frame, these are expanded by the commands below
+		self.strategy_frame.grid_columnconfigure(6, weight=1)
+		self.strategy_frame.grid_columnconfigure(12, weight=1)
+		self.strategy_frame.grid_rowconfigure(10, weight=1)
+
 	def setup_frames(self):
 		self.top_frame = customtkinter.CTkFrame(self)
 		self.top_frame.grid(row=0, column=0, columnspan=2, sticky="EW", pady=self.view.pady)
@@ -53,6 +58,9 @@ class TimingScreen(customtkinter.CTkFrame):
 
 		self.button_frame = customtkinter.CTkFrame(self)
 		self.button_frame.grid(row=2, column=0, sticky="NSEW", pady=self.view.pady, padx=(0, self.view.padx))
+
+		self.strategy_frame = customtkinter.CTkFrame(self)
+		self.strategy_frame.grid(row=2, column=1, sticky="NSEW", pady=self.view.pady, padx=(self.view.padx, 0))
 
 		self.laptimes_frame = customtkinter.CTkFrame(self)
 		self.laptimes_frame.grid(row=2, column=1, sticky="NSEW", pady=self.view.pady, padx=(self.view.padx, 0))
@@ -88,6 +96,7 @@ class TimingScreen(customtkinter.CTkFrame):
 		self.commentary_label = customtkinter.CTkLabel(self.commentary_frame, text="")
 		self.commentary_label.grid(row=1, column=1, padx=self.view.padx, pady=self.view.pady, sticky="EW")
 
+
 		# driver labels
 		customtkinter.CTkLabel(self.driver1_frame, text="Rosberg").grid(row=1, column=1, sticky="EW")
 		customtkinter.CTkLabel(self.driver2_frame, text="Schumacher").grid(row=1, column=1, sticky="EW")
@@ -105,6 +114,9 @@ class TimingScreen(customtkinter.CTkFrame):
 
 		self.lap_times_button = customtkinter.CTkButton(self.button_frame, text="Lap Times", command=lambda window="laptimes": self.show_window(window), image=self.view.stopwatch_icon2, anchor="w")
 		self.lap_times_button.grid(row=1, column=0, sticky="EW", padx=self.view.padx, pady=self.view.pady)
+
+		self.strategy_button = customtkinter.CTkButton(self.button_frame, text="Strategy", command=lambda window="strategy": self.show_window(window), image=self.view.pit_icon2, anchor="w")
+		self.strategy_button.grid(row=2, column=0, sticky="EW", padx=self.view.padx, pady=self.view.pady)
 
 		self.start_btn = customtkinter.CTkButton(self.button_frame, text="Start Race", command=self.start_race, image=self.view.play_icon2, anchor="w")
 		self.start_btn.grid(row=10, column=0, padx=self.view.padx, pady=self.view.pady, sticky="SEW")
@@ -127,6 +139,20 @@ class TimingScreen(customtkinter.CTkFrame):
 		self.driver2_laptime_combo.grid(row=1, column=3, sticky="EW", padx=(5, 5), pady=self.view.pady)
 		self.driver2_laptime_combo.set("Michael Schumacher")
 
+		# STRATEGY CHECKBOXES
+		self.driver1_pit1_var = customtkinter.StringVar(value="on")
+		self.driver1_pit2_var = customtkinter.StringVar(value="off")
+		self.driver1_pit3_var = customtkinter.StringVar(value="off")
+		self.driver1_pit_vars = [self.driver1_pit1_var, self.driver1_pit2_var, self.driver1_pit3_var]
+
+		# STRATEGY EDITORS
+		self.strategy_editor_driver1 = strategy_editor.StrategyEditor(self.strategy_frame, self.view, "Rosberg", 1, 1)
+
+		# hack to create a seperator
+		customtkinter.CTkFrame(self.strategy_frame, width=10).grid(column=6, row=1, rowspan=20, padx=(100, 10), sticky="NSEW")
+		self.strategy_editor_driver2 = strategy_editor.StrategyEditor(self.strategy_frame, self.view, "Schumacher", 7, 1)
+		customtkinter.CTkFrame(self.strategy_frame, width=10).grid(column=12, row=1, rowspan=20, padx=50, sticky="NSEW")
+		
 	def setup_plots(self):
 		# LAPTIMES
 		self.laptimes_figure = Figure(figsize=(5,5), dpi=100)
@@ -163,6 +189,8 @@ class TimingScreen(customtkinter.CTkFrame):
 			self.timing_frame.tkraise()
 		elif window == "laptimes":
 			self.laptimes_frame.tkraise()
+		elif window == "strategy":
+			self.strategy_frame.tkraise()
 
 	def update_laptimes_plot(self, event=None):
 		self.laptimes_axis.cla()
@@ -187,3 +215,5 @@ class TimingScreen(customtkinter.CTkFrame):
 		self.laptimes_axis.set_yticklabels([self.view.milliseconds_to_minutes_seconds(t) for t in default_y_ticks])
 
 		self.laptimes_canvas.draw()
+
+

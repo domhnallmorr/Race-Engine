@@ -74,7 +74,7 @@ class RaceEngineParticpantModel:
 				
 			self.laptime = self.base_laptime + random.randint(0, 700) + self.car_model.fuel_effect + self.car_model.tyre_wear + dirty_air_effect
 
-			if self.current_lap == self.pit1_lap:
+			if self.current_lap in [self.pit1_lap, self.pit2_lap, self.pit3_lap]:
 				self.status = "pitting in"
 
 			if "pitting in" in self.status:
@@ -107,6 +107,8 @@ class RaceEngineParticpantModel:
 		
 	def calculate_pitstop_laps(self):
 		self.pit1_lap = random.randint(19, 32)
+		self.pit2_lap = None
+		self.pit3_lap = None
 
 	def calculate_if_retires(self):
 		self.retires = False
@@ -121,3 +123,15 @@ class RaceEngineParticpantModel:
 			self.fastest_laptime = self.laptime
 		elif min(self.laptimes) == self.laptime:
 			self.fastest_laptime = self.laptime
+
+	def update_player_pitstop_laps(self, data):
+		'''
+		data is a dict optained from the view
+		{
+		"pit1_lap": 24,
+		"pit2_lap": ... etc
+		}
+		'''
+		self.pit1_lap = data["pit1_lap"]
+		self.pit2_lap = data["pit2_lap"]
+		self.pit3_lap = data["pit3_lap"]

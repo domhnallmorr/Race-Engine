@@ -26,6 +26,12 @@ class RaceEngineController:
 
 			self.model.advance()
 			self.view.timing_screen.update_view(self.model.get_data_for_view())
+
+			# GET PIT STRATEGY FROM VIEW
+			driver1_data = self.view.timing_screen.strategy_editor_driver1.get_data()
+			driver2_data = self.view.timing_screen.strategy_editor_driver2.get_data()
+			self.model.update_player_drivers_strategy(driver1_data, driver2_data)
+			
 			self.app.after(3000, self.simulate_race)
 
 	def pause_resume(self):

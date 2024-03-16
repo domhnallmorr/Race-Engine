@@ -34,6 +34,9 @@ class RaceEngineModel:
 
 		self.retirements = []
 
+		self.player_driver1 = self.get_particpant_model_by_name("Nico Rosberg")
+		self.player_driver2 = self.get_particpant_model_by_name("Michael Schumacher")
+
 	def log_event(self, event):
 		logging.info(f"Lap {self.current_lap}: {event}")
 
@@ -325,3 +328,8 @@ class RaceEngineModel:
 			data["laptimes"][p.name] = copy.deepcopy(p.laptimes)
 
 		return data
+	
+	def update_player_drivers_strategy(self, driver1_data, driver2_data):
+		self.player_driver1.update_player_pitstop_laps(driver1_data)
+		self.player_driver2.update_player_pitstop_laps(driver2_data)
+		
