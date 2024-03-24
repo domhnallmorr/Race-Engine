@@ -13,10 +13,11 @@ from matplotlib.figure import Figure
 from race_engine_view.custom_widgets import timing_screen_table, strategy_editor
 
 class TimingScreen(customtkinter.CTkFrame):
-	def __init__(self, master, view):
+	def __init__(self, master, view, session):
 		super().__init__(master)
 
 		self.view = view
+		self.session = session
 
 		self.setup_frames()
 		self.setup_labels()
@@ -83,9 +84,13 @@ class TimingScreen(customtkinter.CTkFrame):
 	def setup_labels(self):
 		self.title_label = customtkinter.CTkLabel(self.top_frame, text="RACE", font=self.view.header1_font)
 		self.title_label.grid(row=0, column=0, padx=self.view.padx, pady=self.view.pady, sticky="NW")
+		if self.session == "FP1":
+			self.title_label.configure(text="Friday Practice")
 
 		self.lap_label = customtkinter.CTkLabel(self.top_frame, text="PRE-RACE", width=100, anchor=W)
 		self.lap_label.grid(row=1, column=0, padx=self.view.padx, pady=self.view.pady, sticky="NW")
+		if self.session != "race":
+			self.lap_label.configure(text="PRE-SESSION")
 
 		self.fastest_laptime_label = customtkinter.CTkLabel(self.top_frame, text="FASTEST LAP: N/A")
 		self.fastest_laptime_label.grid(row=1, column=1, padx=self.view.padx, pady=self.view.pady, sticky="NW")
@@ -118,11 +123,13 @@ class TimingScreen(customtkinter.CTkFrame):
 		self.strategy_button = customtkinter.CTkButton(self.button_frame, text="Strategy", command=lambda window="strategy": self.show_window(window), image=self.view.pit_icon2, anchor="w")
 		self.strategy_button.grid(row=2, column=0, sticky="EW", padx=self.view.padx, pady=self.view.pady)
 
-		self.start_btn = customtkinter.CTkButton(self.button_frame, text="Start Race", command=self.start_race, image=self.view.play_icon2, anchor="w")
+		self.start_btn = customtkinter.CTkButton(self.button_frame, text="Start Race", command=self.start_session, image=self.view.play_icon2, anchor="w")
 		self.start_btn.grid(row=10, column=0, padx=self.view.padx, pady=self.view.pady, sticky="SEW")
+		if self.session != "race":
+			self.start_btn.configure(text="Start Session")
 
 	def setup_widgets(self):
-		self.table = timing_screen_table.TimingScreenTable(self.timing_frame, self.view)
+		self.table = timing_screen_table.TimingScreenTable(self.timing_frame, self.view, self.session)
 		self.table.pack(expand=True, fill=BOTH, side=LEFT)
 
 		combo_width = 300
@@ -162,21 +169,28 @@ class TimingScreen(customtkinter.CTkFrame):
 		self.laptimes_canvas.draw()
 		self.laptimes_canvas.get_tk_widget().grid(row=2, column=0, columnspan=8, pady=2,sticky="nsew")	
 
-	def start_race(self):
+	def start_session(self):
 		self.start_btn.configure(text="Pause", command=self.view.controller.pause_resume, image=self.view.pause_icon2)
-		self.view.controller.start_race()
+		self.view.controller.start_session()
 
 	def update_view(self, data):
-		if data["current_lap"] > data["total_laps"]:
-			self.lap_label.configure(text="RACE OVER")
-		else:
-			self.lap_label.configure(text=f"LAP {data['current_lap']}/{data['total_laps']}")
 
-		fastest_laptime = self.view.milliseconds_to_minutes_seconds(data["fastest_laptime"])
+		if self.session == "race":
+			if data["current_lap"] > data["total_laps"]:
+				self.lap_label.configure(text="RACE OVER")
+			else:
+				self.lap_label.configure(text=f"LAP {data['current_lap']}/{data['total_laps']}")
+		else:
+			self.lap_label.configure(text=self.view.format_seconds(data["time_left"]))
+
+		if data["fastest_laptime"] is None:
+			fastest_laptime = "-" # no laps set yet
+		else:
+			fastest_laptime = self.view.milliseconds_to_minutes_seconds(data["fastest_laptime"])
 		self.fastest_laptime_label.configure(text=f"FASTEST LAP: {fastest_laptime} ({data['fastest_laptime_driver']})")
 
 		self.table.update(data["standings"], data["fastest_laptime"], data["fastest_lap_times"], data["retirements"])
-
+		
 		self.commentary_label.configure(text=data["commentary"])
 		self.driver1_fuel_label.configure(text=f'{data["driver1_fuel"]}kg')
 		

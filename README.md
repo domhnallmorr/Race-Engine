@@ -7,3 +7,5 @@ Uses custom tkinter for the UI
 ## Preview
 
 ![Preview](images/preview.PNG)
+
+![Preview2](images/preview2.PNG)

@@ -1,9 +1,15 @@
+import numpy as np
 from tksheet import Sheet
 
 class TimingScreenTable(Sheet):
-	def __init__(self, parent, view):
+	def __init__(self, parent, view, session):
 		self.view = view
-		self.headers = ["Name", "Gap", "Interval", "Last Lap", "Fastest Lap", "Pit"]
+		self.session = session
+
+		if session == "race":
+			self.headers = ["Name", "Gap", "Interval", "Last Lap", "Fastest Lap", "Pit"]
+		else:
+			self.headers = ["Name", "Gap", "Interval", "Last Lap", "Fastest Lap", "Laps", "Status"]
 		
 		super().__init__(parent, headers=self.headers)
 
@@ -26,6 +32,12 @@ class TimingScreenTable(Sheet):
 		self.column_width(column=3, width=100, only_set_if_too_small=False, redraw=True)
 
 	def update(self, standings_df, race_fastest_laptime, fastest_lap_times=[], retirements=[]):
+		if self.session == "race":
+			self.update_race(standings_df, race_fastest_laptime, fastest_lap_times, retirements)
+		else:
+			self.update_practice(standings_df)
+
+	def update_race(self, standings_df, race_fastest_laptime, fastest_lap_times=[], retirements=[]):
 		data = []
 		fastest_lap_driver = None
 
@@ -76,4 +88,49 @@ class TimingScreenTable(Sheet):
 			
 		self.set_column_widths() # Table redrawn here
 
-	
+
+	def update_practice(self, standings_df):
+		data = []
+
+		for idx, row in standings_df.iterrows():
+			if row["Status"] == "out_lap":
+				status = "OUT"
+			elif row["Status"] == "running":
+				status = "RUNNING"
+			else:
+				status = "PIT"
+
+			if row["Last Lap"] != "-":
+				last_lap = self.view.milliseconds_to_minutes_seconds(row["Last Lap"])
+			else:
+				last_lap = "-"
+			
+			if row["Fastest Lap"] is not None:
+				fastest_lap = self.view.milliseconds_to_minutes_seconds(row["Fastest Lap"])
+			else:
+				fastest_lap = "-"
+			
+			gap = row["Gap to Leader"]
+			if gap != "-":
+				gap = gap/1000
+
+			data.append([row["Driver"], gap, "-", last_lap, fastest_lap, row["Lap"], status])
+
+
+		self.set_sheet_data(data, redraw=False)
+
+		# APPLY COLORING
+		lap_col_idx = 3
+
+		for idx, row in standings_df.iterrows():
+			if row["Last Lap"] != "-":
+				if row["Last Lap"] == row["Fastest Lap"]:
+					
+					if idx == 0:
+						self.highlight_cells(row=idx, column=lap_col_idx, fg="#c034eb")
+					else:
+						self.highlight_cells(row=idx, column=lap_col_idx, fg="#54d426")
+				else:
+					self.highlight_cells(row=idx, column=lap_col_idx, fg="white")
+		self.set_column_widths() # table redrawn here
+		

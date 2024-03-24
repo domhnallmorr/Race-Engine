@@ -18,6 +18,14 @@ def gen_race_start_message():
 
 	return random.choice(messages)
 
+def gen_practice_start_message():
+	messages = [
+		"Free Practice has begun!",
+		"Green light at the end of the pit lane, Practice is underway!",
+	]
+
+	return random.choice(messages)
+
 def gen_race_over_message(winning_driver):
 
 	messages = [		
@@ -72,6 +80,13 @@ def gen_retirement_message(driver):
 def gen_lead_after_turn1_message(driver):
 	messages = [ 
 		f"{driver} leads the field out of turn 1!"
+	]
+	
+	return random.choice(messages)
+
+def gen_leaving_pit_lane_message(driver):
+	messages = [ 
+		f"{driver} heading out on track!"
 	]
 	
 	return random.choice(messages)

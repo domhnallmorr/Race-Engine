@@ -1,10 +1,9 @@
-
 from tkinter import ttk
 from tkinter import *
 
 import customtkinter
 
-from race_engine_view import timing_screen, race_engine_icons
+from race_engine_view import timing_screen, race_engine_icons, race_weekend_window
 
 class RaceEngineView:
 	def __init__(self, controller, driver_names):
@@ -15,7 +14,9 @@ class RaceEngineView:
 		self.padx = 7
 		self.padx_large = 25 # if a large gap is needed
 
+		self.page_title_font = ("Verdana", 30)
 		self.header1_font = ("Verdana", 24)
+		self.normal_font = ("Verdana", 15)
 
 		self.dark_bg = "#2b2b2b"
 		self.light_bg = "#333333"
@@ -25,8 +26,8 @@ class RaceEngineView:
 
 
 	def setup_windows(self):
-		self.timing_screen = timing_screen.TimingScreen(self.controller.app, self)
-		self.timing_screen.pack(expand=True, fill=BOTH, side=LEFT)
+		self.race_weekend_window = race_weekend_window.RaceWeekendWindow(self.controller.app, self)
+		self.race_weekend_window.pack(expand=True, fill=BOTH, side=LEFT)
 
 	@staticmethod
 	def milliseconds_to_minutes_seconds(milliseconds):
@@ -45,3 +46,16 @@ class RaceEngineView:
 		time = f"{minutes}.{seconds}"
 
 		return time	
+	
+	@staticmethod
+	def format_seconds(seconds):
+		hours = seconds // 3600
+		minutes = (seconds % 3600) // 60
+		seconds = seconds % 60
+    
+		return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+	
+	def launch_session(self, session):
+		self.timing_screen = timing_screen.TimingScreen(self.controller.app, self, session)
+		self.race_weekend_window.pack_forget()
+		self.timing_screen.pack(expand=True, fill=BOTH, side=LEFT)
