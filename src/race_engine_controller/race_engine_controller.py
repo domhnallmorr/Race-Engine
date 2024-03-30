@@ -32,10 +32,10 @@ class RaceEngineController:
 			driver2_data = self.view.timing_screen.strategy_editor_driver2.get_data()
 			self.model.update_player_drivers_strategy(driver1_data, driver2_data)
 			
-			self.app.after(3000, self.simulate_session)
+			self.app.after(1000, self.simulate_session)
 
 			if self.model.status == "post_session":
-				self.
+				pass #self.view.
 
 	def pause_resume(self):
 		if self.model.status == "running":
@@ -50,7 +50,6 @@ class RaceEngineController:
 
 		if commentary:
 			c = commentary.pop(0)
-			print(c)
 			self.view.timing_screen.update_commentary(f"{c} {len(commentary)}")
 			self.app.after(2000, self.update_commentary(commentary))
 
@@ -58,7 +57,14 @@ class RaceEngineController:
 		pass
 
 	def go_to_session(self, session):
-
 		self.model.setup_session(session)
 		self.view.launch_session(session)
 		self.view.timing_screen.update_view(self.model.get_data_for_view())
+
+	def end_session(self, session):
+		self.model.end_session(session)
+		self.view.end_session(session, self.model.results[session])
+
+	def auto_simulate_session(self, session):
+		self.model.simulate_session(session)
+		self.end_session(session)

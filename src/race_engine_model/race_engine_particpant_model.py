@@ -150,7 +150,7 @@ class RaceEngineParticpantModel:
 
 		while time_left > 0:
 			leave_time = random.randint(time_left - (20*60), time_left)
-			number_laps = random.randint(3, 14)
+			number_laps = random.randint(3, 10)
 			min_fuel_load = int(self.circuit_model.fuel_consumption * number_laps) + 1
 			fuel_load = random.randint(min_fuel_load, 155)
 
@@ -158,7 +158,10 @@ class RaceEngineParticpantModel:
 
 			base_laptime_seconds = self.circuit_model.base_laptime / 1000
 			time_left -= number_laps * (base_laptime_seconds + 10)
-			time_left -= 10*60 # ensure at least 10 mins spent in pits
+			
+			time_in_pits = random.randint(15, 35) * 60
+			time_left -= time_in_pits
+			
 
 	def check_leaving_pit_lane(self, time_left):
 		leaving = False

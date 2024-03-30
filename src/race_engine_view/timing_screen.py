@@ -180,8 +180,12 @@ class TimingScreen(customtkinter.CTkFrame):
 				self.lap_label.configure(text="RACE OVER")
 			else:
 				self.lap_label.configure(text=f"LAP {data['current_lap']}/{data['total_laps']}")
-		else:
-			self.lap_label.configure(text=self.view.format_seconds(data["time_left"]))
+		else: # practice / race
+			if data["status"] == "post_session":
+				self.lap_label.configure(text="SESSION OVER")
+				self.start_btn.configure(text="Advance", command=self.advance, image=self.view.advance_icon2)
+			else:
+				self.lap_label.configure(text=self.view.format_seconds(data["time_left"]))
 
 		if data["fastest_laptime"] is None:
 			fastest_laptime = "-" # no laps set yet
@@ -230,4 +234,6 @@ class TimingScreen(customtkinter.CTkFrame):
 
 		self.laptimes_canvas.draw()
 
-
+	def advance(self):
+		self.view.controller.end_session(self.session)
+		

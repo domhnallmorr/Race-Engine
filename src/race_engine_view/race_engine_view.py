@@ -29,6 +29,8 @@ class RaceEngineView:
 		self.race_weekend_window = race_weekend_window.RaceWeekendWindow(self.controller.app, self)
 		self.race_weekend_window.pack(expand=True, fill=BOTH, side=LEFT)
 
+		self.current_window = self.race_weekend_window
+
 	@staticmethod
 	def milliseconds_to_minutes_seconds(milliseconds):
 		total_seconds = milliseconds / 1000
@@ -59,3 +61,16 @@ class RaceEngineView:
 		self.timing_screen = timing_screen.TimingScreen(self.controller.app, self, session)
 		self.race_weekend_window.pack_forget()
 		self.timing_screen.pack(expand=True, fill=BOTH, side=LEFT)
+
+		self.current_window = self.timing_screen
+
+	def end_session(self, session, session_result):
+		if session == "FP1":
+			self.race_weekend_window.disable_go_to_session_btn(session, session_result)
+		self.show_window("race_weekend")
+
+	def show_window(self, window):
+		self.current_window.pack_forget()
+
+		if window == "race_weekend":
+			self.race_weekend_window.pack(expand=True, fill=BOTH, side=LEFT)

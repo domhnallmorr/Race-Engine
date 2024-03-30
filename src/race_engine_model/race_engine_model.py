@@ -40,6 +40,8 @@ class RaceEngineModel:
 		self.player_driver1 = self.get_particpant_model_by_name("Nico Rosberg")
 		self.player_driver2 = self.get_particpant_model_by_name("Michael Schumacher")
 
+		self.results = {} # {"FP1": {"p1": "Vettel"}}
+
 	def log_event(self, event):
 		logging.info(f"Lap {self.current_lap}: {event}")
 
@@ -120,7 +122,6 @@ class RaceEngineModel:
 		while True:
 			self.calculate_lap()
 			self.update_standings()
-			print(self.standings_df)
 			self.current_lap += 1
 
 			if self.current_lap > self.circuit_model.number_of_laps or self.current_lap == 999:
@@ -178,17 +179,31 @@ class RaceEngineModel:
 					self.standings_df.reset_index(drop=True, inplace=True)
 					self.standings_df["Position"] = self.standings_df.index + 1
 
+					# Update gaps and intervals
 					leader_time = self.standings_df.loc[self.standings_df["Position"] == 1, "Fastest Lap"].values[0]
+					laptime_ahead = leader_time
+
 					if leader_time is None:
 						self.standings_df["Gap to Leader"] = "-"
+						self.standings_df["Gap Ahead"] = "-"
 					else:
 						gaps = []
+						intervals = []
 						for idx, row in self.standings_df.iterrows():
 							if row["Fastest Lap"] is None:
 								gaps.append("-")
 							else:
 								gaps.append(row["Fastest Lap"] - leader_time)
+
+							if laptime_ahead != "-" and row["Fastest Lap"] is not None:
+								intervals.append(row["Fastest Lap"] - laptime_ahead)
+							else:
+								intervals.append("-")
+
+							laptime_ahead = row["Fastest Lap"]
+
 						self.standings_df["Gap to Leader"] = gaps
+						self.standings_df["Gap Ahead"] = intervals
 
 					if self.time_left <= 0.0:
 						self.status = "post_session"
@@ -371,6 +386,7 @@ class RaceEngineModel:
 	def get_data_for_view(self):
 		data = {}
 
+		data["status"] = self.status
 		data["current_lap"] = self.current_lap
 		data["total_laps"] = self.circuit_model.number_of_laps
 		data["time_left"] = self.time_left
@@ -408,15 +424,32 @@ class RaceEngineModel:
 		self.setup_standings()
 
 		if session in ["FP1"]:
+			self.time_left = 120 * 60  # 2 hours in seconds
+
 			for participant in self.participants:
-				participant.generate_practice_runs(120*60)
+				participant.generate_practice_runs(self.time_left)
 				participant.status = "in_pits"
 
 			# SET STAUS COLUMN TO "PIT"
 			self.standings_df["Status"] = "PIT"
 
-			self.time_left = 120 * 60  # 2 hours in seconds
-
+		
 		elif session == "race":
 			for participant in self.participants:
 				participant.status = "running"
+
+	def end_session(self, session):
+		fastest_driver = self.standings_df.iloc[0]["Driver"]
+		fastest_laptime = self.standings_df.iloc[0]["Fastest Lap"]
+
+		self.results[session] = {}
+		self.results[session]["p1"] = fastest_driver
+		self.results[session]["fastest lap"] = fastest_laptime
+
+	def simulate_session(self, session):
+		self.setup_session(session)
+
+		while self.status != "post_session":
+			self.advance()
+			if len(self.commentary_to_process) > 0:
+				self.commentary_to_process.pop(0)

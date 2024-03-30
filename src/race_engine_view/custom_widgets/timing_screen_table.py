@@ -114,7 +114,11 @@ class TimingScreenTable(Sheet):
 			if gap != "-":
 				gap = gap/1000
 
-			data.append([row["Driver"], gap, "-", last_lap, fastest_lap, row["Lap"], status])
+			interval = row["Gap Ahead"]
+			if interval != "-":
+				interval = interval/1000
+
+			data.append([row["Driver"], gap, interval, last_lap, fastest_lap, row["Lap"], status])
 
 
 		self.set_sheet_data(data, redraw=False)

@@ -72,8 +72,14 @@ class RaceWeekendWindow(customtkinter.CTkFrame):
 						      image=self.view.sunny_icon2, compound=RIGHT)
 		self.friday_forecast_label.grid(row=2, column=0, padx=(self.view.padx_large, self.view.padx), pady=self.view.pady, sticky="W")
 
+		self.friday_results_label = customtkinter.CTkLabel(self.friday_practice_frame, text="", font=self.view.normal_font)
+		self.friday_results_label.grid(row=2, column=1, padx=(self.view.padx_large, self.view.padx), pady=self.view.pady, sticky="W")
+
 		self.go_to_f_prac_btn = customtkinter.CTkButton(self.friday_practice_frame, text="Go To Practice", command=lambda session="FP1": self.view.controller.go_to_session(session))
 		self.go_to_f_prac_btn.grid(row=10, column=0, padx=self.view.padx_large, pady=self.view.pady, sticky="NW")
+
+		self.sim_f_prac_btn = customtkinter.CTkButton(self.friday_practice_frame, text="Simulate Practice", command=lambda session="FP1": self.view.controller.auto_simulate_session(session))
+		self.sim_f_prac_btn.grid(row=10, column=1, padx=self.view.padx_large, pady=self.view.pady, sticky="NW")
 
 		# dummy for grid
 		customtkinter.CTkLabel(self.friday_practice_frame, text="", font=self.view.normal_font).grid(row=2, column=2, padx=self.view.padx_large, pady=self.view.pady, sticky="W")
@@ -135,6 +141,13 @@ class RaceWeekendWindow(customtkinter.CTkFrame):
 		self.track_image = customtkinter.CTkImage(light_image=self.view.track_maps[data["name"]], size=(384, 192))
 		self.track_map_image_label.configure(image=self.track_image)
 		
+	def disable_go_to_session_btn(self, session, session_result):
+		if session == "FP1":
+			self.go_to_f_prac_btn.configure(state="disabled")
+			self.sim_f_prac_btn.configure(state="disabled")
+
+			fastest_lap = self.view.milliseconds_to_minutes_seconds(session_result["fastest lap"])
+			self.friday_results_label.configure(text=f"P1: {session_result['p1']} - {fastest_lap}")
 
 
 
