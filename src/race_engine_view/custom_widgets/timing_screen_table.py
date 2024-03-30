@@ -45,8 +45,11 @@ class TimingScreenTable(Sheet):
 			if row["Status"] == "retired":
 				last_lap = "STOP"
 			else:
-				last_lap = self.view.milliseconds_to_minutes_seconds(row["Last Lap"])
-			
+				if row["Last Lap"] != "-":
+					last_lap = self.view.milliseconds_to_minutes_seconds(row["Last Lap"])
+				else:
+					last_lap = "-"
+
 			if idx == 0:
 				interval = row["Lap"]
 				gap = "Lap"
@@ -60,9 +63,12 @@ class TimingScreenTable(Sheet):
 						gap = f"+{row['Lapped Status'].split()[1]}"
 				else:
 					gap = row["Gap to Leader"]/1000
-
-			fastest_lap = self.view.milliseconds_to_minutes_seconds(row["Fastest Lap"])
-
+			
+			if row["Fastest Lap"] is not None:
+				fastest_lap = self.view.milliseconds_to_minutes_seconds(row["Fastest Lap"])
+			else:
+				fastest_lap = "-"
+				
 			# CHECK IF DRIVER JUST SET FASTEST LAP
 			if race_fastest_laptime == row["Last Lap"]:
 				fastest_lap_driver = row["Driver"]
