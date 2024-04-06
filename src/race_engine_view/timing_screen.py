@@ -103,8 +103,8 @@ class TimingScreen(customtkinter.CTkFrame):
 
 
 		# driver labels
-		customtkinter.CTkLabel(self.driver1_frame, text="Rosberg").grid(row=1, column=1, sticky="EW")
-		customtkinter.CTkLabel(self.driver2_frame, text="Schumacher").grid(row=1, column=1, sticky="EW")
+		customtkinter.CTkLabel(self.driver1_frame, text="Nico Rosberg").grid(row=1, column=1, sticky="EW")
+		customtkinter.CTkLabel(self.driver2_frame, text="Michael Schumacher").grid(row=1, column=1, sticky="EW")
 
 		self.driver1_fuel_label = customtkinter.CTkLabel(self.driver1_frame, text="0.0kg")
 		self.driver1_fuel_label.grid(row=2, column=1, sticky="EW")
@@ -153,11 +153,11 @@ class TimingScreen(customtkinter.CTkFrame):
 		self.driver1_pit_vars = [self.driver1_pit1_var, self.driver1_pit2_var, self.driver1_pit3_var]
 
 		# STRATEGY EDITORS
-		self.strategy_editor_driver1 = strategy_editor.StrategyEditor(self.strategy_frame, self.view, "Rosberg", 1, 1)
+		self.strategy_editor_driver1 = strategy_editor.StrategyEditor(self.strategy_frame, self.view, "Nico Rosberg", 1, 1, self.session)
 
 		# hack to create a seperator
 		customtkinter.CTkFrame(self.strategy_frame, width=10).grid(column=6, row=1, rowspan=20, padx=(100, 10), sticky="NSEW")
-		self.strategy_editor_driver2 = strategy_editor.StrategyEditor(self.strategy_frame, self.view, "Schumacher", 7, 1)
+		self.strategy_editor_driver2 = strategy_editor.StrategyEditor(self.strategy_frame, self.view, "Michael Schumacher", 7, 1, self.session)
 		customtkinter.CTkFrame(self.strategy_frame, width=10).grid(column=12, row=1, rowspan=20, padx=50, sticky="NSEW")
 		
 	def setup_plots(self):

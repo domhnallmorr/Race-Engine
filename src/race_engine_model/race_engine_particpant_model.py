@@ -142,9 +142,11 @@ class RaceEngineParticpantModel:
 		self.pit2_lap = data["pit2_lap"]
 		self.pit3_lap = data["pit3_lap"]
 
-	def generate_practice_runs(self, session_time):
+	def setup_session(self):
 		self.practice_laps_completed = 0
 		self.practice_runs = [] # [[time_left, fuel, number_laps]]
+
+	def generate_practice_runs(self, session_time):
 
 		time_left = session_time
 
@@ -206,3 +208,8 @@ class RaceEngineParticpantModel:
 
 	def update_next_update_time(self, time_left):
 		self.next_update_time = time_left - 90
+
+	def send_player_car_out(self, time_left, fuel_load_laps, number_laps_to_run):
+		fuel_load_kg = self.car_model.calculate_required_fuel(fuel_load_laps)
+		# TODO fix hard coding of -10 seconds below
+		self.practice_runs.append([time_left-10, fuel_load_kg, number_laps_to_run])

@@ -95,7 +95,7 @@ class RaceEngineModel:
 				driver_speed = random.randint(min_driver_speed, max_driver_speed)
 				driver_count += 1
 
-				car = race_engine_car_model.RaceEngineCarModel(team_name, team_speed, color)
+				car = race_engine_car_model.RaceEngineCarModel(team_name, team_speed, color, self.circuit_model)
 				driver = race_engine_driver_model.RaceEngineDriverModel(driver_name, driver_speed, driver_status)
 				self.participants.append(race_engine_particpant_model.RaceEngineParticpantModel(driver, car, self.circuit_model, driver_count))
 
@@ -427,7 +427,9 @@ class RaceEngineModel:
 			self.time_left = 120 * 60  # 2 hours in seconds
 
 			for participant in self.participants:
-				participant.generate_practice_runs(self.time_left)
+				participant.setup_session()
+				if participant not in [self.player_driver1, self.player_driver2]:
+					participant.generate_practice_runs(self.time_left)
 				participant.status = "in_pits"
 
 			# SET STAUS COLUMN TO "PIT"
@@ -453,3 +455,7 @@ class RaceEngineModel:
 			self.advance()
 			if len(self.commentary_to_process) > 0:
 				self.commentary_to_process.pop(0)
+
+	def send_player_car_out(self, driver_name, fuel_load_laps, number_laps_to_run):
+		particpant_model = self.get_particpant_model_by_name(driver_name)
+		particpant_model.send_player_car_out(self.time_left, fuel_load_laps, number_laps_to_run)

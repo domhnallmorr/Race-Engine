@@ -68,3 +68,6 @@ class RaceEngineController:
 	def auto_simulate_session(self, session):
 		self.model.simulate_session(session)
 		self.end_session(session)
+
+	def send_player_car_out(self, driver_name, fuel_load_laps, number_laps_to_run):
+		self.model.send_player_car_out(driver_name, fuel_load_laps, number_laps_to_run)
