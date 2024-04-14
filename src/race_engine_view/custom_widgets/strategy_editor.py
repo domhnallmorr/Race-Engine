@@ -32,7 +32,7 @@ class StrategyEditor:
 
 		row = start_row + 1
 
-		if self.session in ["FP1"]:
+		if self.session in ["FP1", "Q1"]:
 			self.setup_practice_edit_widgets(row)
 			self.change_fuel_event(change=None)
 			self.change_laps_to_run_event(change=None)

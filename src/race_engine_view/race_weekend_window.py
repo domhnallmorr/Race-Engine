@@ -100,6 +100,9 @@ class RaceWeekendWindow(customtkinter.CTkFrame):
 						     image=self.view.sunny_icon2, compound=RIGHT)
 		self.qualy_forecast_label.grid(row=2, column=0, padx=(self.view.padx_large, self.view.padx), pady=self.view.pady, sticky="W")
 
+		self.go_to_qualy_btn = customtkinter.CTkButton(self.qualifying_frame, text="Go To Qualifying", command=lambda session="Q1": self.view.controller.go_to_session(session))
+		self.go_to_qualy_btn.grid(row=10, column=0, padx=self.view.padx_large, pady=self.view.pady, sticky="NW")
+
 		# WARMUP ------------------------------
 		customtkinter.CTkLabel(self.warmup_frame, text="Warmup", font=self.view.header1_font).grid(row=1,
 										column=0, padx=self.view.padx, pady=self.view.pady, sticky="NW")

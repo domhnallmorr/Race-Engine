@@ -22,7 +22,7 @@ class RaceEngineModel:
 						]
 						)
 
-		self.setup_standings()
+		# self.setup_standings()
 
 		self.current_lap = 1
 		self.time_left = None
@@ -116,6 +116,10 @@ class RaceEngineModel:
 
 		self.standings_df = pd.DataFrame(columns=columns, data=data)
 
+		# SETUP STARTING GRID FOR RACE
+		if "Q1" in self.results.keys():
+			self.standings_df["Driver"] = self.results["Q1"]["results"]["Driver"]
+
 	def run_race(self):
 		self.calculate_start()
 
@@ -133,7 +137,7 @@ class RaceEngineModel:
 	def advance(self):
 		if self.session == "race":
 			self.advance_race()
-		elif self.session in ["FP1"]:
+		elif self.session in ["FP1", "Q1"]:
 			self.advance_practice()
 
 	def advance_race(self):
@@ -324,7 +328,7 @@ class RaceEngineModel:
 		average_speed = 47.0 #m/s
 
 		order_after_turn1 = []
-		for idx, p in enumerate(self.participants):
+		for idx, p in enumerate([self.get_particpant_model_by_name(n) for n in self.standings_df["Driver"].values.tolist()]):
 			random_factor = random.randint(-2000, 2000)/1000
 			time_to_turn1 = round(dist_to_turn1 / (average_speed + random_factor), 3)
 			order_after_turn1.append([time_to_turn1, p])
@@ -420,16 +424,20 @@ class RaceEngineModel:
 		
 	def setup_session(self, session):
 		self.session = session
+		self.status = "pre_session"
 
 		self.setup_standings()
 
-		if session in ["FP1"]:
-			self.time_left = 120 * 60  # 2 hours in seconds
+		if session in ["FP1", "Q1"]:
+			if session == "FP1":
+				self.time_left = 120 * 60  # 2 hours in seconds
+			elif session == "Q1":
+				self.time_left = 60 * 60 # 1hr qualy session
 
 			for participant in self.participants:
 				participant.setup_session()
 				if participant not in [self.player_driver1, self.player_driver2]:
-					participant.generate_practice_runs(self.time_left)
+					participant.generate_practice_runs(self.time_left, session)
 				participant.status = "in_pits"
 
 			# SET STAUS COLUMN TO "PIT"
@@ -447,6 +455,7 @@ class RaceEngineModel:
 		self.results[session] = {}
 		self.results[session]["p1"] = fastest_driver
 		self.results[session]["fastest lap"] = fastest_laptime
+		self.results[session]["results"] = self.standings_df.copy(deep=True)
 
 	def simulate_session(self, session):
 		self.setup_session(session)

@@ -86,6 +86,8 @@ class TimingScreen(customtkinter.CTkFrame):
 		self.title_label.grid(row=0, column=0, padx=self.view.padx, pady=self.view.pady, sticky="NW")
 		if self.session == "FP1":
 			self.title_label.configure(text="Friday Practice")
+		elif self.session == "Q1":
+			self.title_label.configure(text="Qualifying")
 
 		self.lap_label = customtkinter.CTkLabel(self.top_frame, text="PRE-RACE", width=100, anchor=W)
 		self.lap_label.grid(row=1, column=0, padx=self.view.padx, pady=self.view.pady, sticky="NW")

@@ -146,15 +146,20 @@ class RaceEngineParticpantModel:
 		self.practice_laps_completed = 0
 		self.practice_runs = [] # [[time_left, fuel, number_laps]]
 
-	def generate_practice_runs(self, session_time):
+	def generate_practice_runs(self, session_time, session):
 
 		time_left = session_time
 
 		while time_left > 0:
-			leave_time = random.randint(time_left - (20*60), time_left)
-			number_laps = random.randint(3, 10)
-			min_fuel_load = int(self.circuit_model.fuel_consumption * number_laps) + 1
-			fuel_load = random.randint(min_fuel_load, 155)
+			if session != "Q1": # practice run
+				leave_time = random.randint(time_left - (20*60), time_left)
+				number_laps = random.randint(3, 10)
+				min_fuel_load = int(self.circuit_model.fuel_consumption * number_laps) + 1
+				fuel_load = random.randint(min_fuel_load, 155)
+			else: # qualy run
+				leave_time = random.randint(time_left - (10*60), time_left)
+				number_laps = 3
+				fuel_load = 3
 
 			self.practice_runs.append([leave_time, fuel_load, number_laps])
 
