@@ -7,27 +7,11 @@ class RaceEngineParticpantModel:
 		self.circuit_model = circuit
 		self.position = starting_position
 
-		self.current_lap = 1
-
-		self.laptimes = []
-		self.gaps_to_leader = []
-		self.total_time = 0
-		self.pitstop_times = []
-		self.positions_by_lap = []
-		self.number_of_pitstops = 0
 
 		self.calculate_base_laptime()
 		self.calculate_pitstop_laps()
 		self.calculate_if_retires()
 
-		self.status = "running"
-		self.attacking = False
-		self.defending = False
-
-		self.fastest_laptime = None
-		self.laptime = None
-
-		self.next_update_time = None # for updating practice session
 
 	def __repr__(self) -> str:
 		return f"<RaceEngineParticpantModel {self.driver.name}>"
@@ -42,6 +26,25 @@ class RaceEngineParticpantModel:
 	@property
 	def name(self):
 		return self.driver.name
+
+	def setup_variables_for_session(self):
+		self.current_lap = 1
+
+		self.laptimes = []
+		self.gaps_to_leader = []
+		self.total_time = 0
+		self.pitstop_times = []
+		self.positions_by_lap = []
+		self.number_of_pitstops = 0
+
+		self.status = "in_pit"
+		self.attacking = False
+		self.defending = False
+
+		self.fastest_laptime = None
+		self.laptime = None
+
+		self.next_update_time = None # for updating practice session
 
 	def calculate_base_laptime(self):
 		self.base_laptime = self.circuit_model.base_laptime
@@ -122,7 +125,7 @@ class RaceEngineParticpantModel:
 
 		if random.randint(0, 100) < 20:
 			self.retires = True
-			self.retire_lap = random.randint(2, self.circuit_model.number_of_laps)
+			self.retire_lap = random.randint(3, self.circuit_model.number_of_laps)
 
 	def update_fastest_lap(self):
 		if self.fastest_laptime is None:
@@ -147,19 +150,15 @@ class RaceEngineParticpantModel:
 		self.practice_runs = [] # [[time_left, fuel, number_laps]]
 
 	def generate_practice_runs(self, session_time, session):
+		assert session in ["FP"], f"Unsupported Session {session}"
 
-		time_left = session_time
+		time_left = int(session_time)
 
 		while time_left > 0:
-			if session != "Q1": # practice run
-				leave_time = random.randint(time_left - (20*60), time_left)
-				number_laps = random.randint(3, 10)
-				min_fuel_load = int(self.circuit_model.fuel_consumption * number_laps) + 1
-				fuel_load = random.randint(min_fuel_load, 155)
-			else: # qualy run
-				leave_time = random.randint(time_left - (10*60), time_left)
-				number_laps = 3
-				fuel_load = 3
+			leave_time = random.randint(time_left - (20*60), time_left)
+			number_laps = random.randint(3, 10)
+			min_fuel_load = int(self.circuit_model.fuel_consumption * number_laps) + 1
+			fuel_load = random.randint(min_fuel_load, 155)
 
 			self.practice_runs.append([leave_time, fuel_load, number_laps])
 
@@ -169,6 +168,29 @@ class RaceEngineParticpantModel:
 			time_in_pits = random.randint(15, 35) * 60
 			time_left -= time_in_pits
 			
+			time_left = int(time_left) # ensure time left is an int (for randint)
+
+	def generate_qualy_runs(self):
+		# ASSUMES 1 HOUR QUALY, 12 laps (4 runs, 3 laps each)
+
+		number_laps = 3
+		fuel_load = 3
+
+		# RUN 1
+		leave_time = random.randint(3_000, 3_550)
+		self.practice_runs.append([leave_time, fuel_load, number_laps])
+
+		# RUN 2
+		leave_time = random.randint(1_960, 2_760)
+		self.practice_runs.append([leave_time, fuel_load, number_laps])
+
+		# RUN 3
+		leave_time = random.randint(1_060, 1_860)
+		self.practice_runs.append([leave_time, fuel_load, number_laps])
+
+		# RUN 4
+		leave_time = random.randint(150, 900)
+		self.practice_runs.append([leave_time, fuel_load, number_laps])
 
 	def check_leaving_pit_lane(self, time_left):
 		leaving = False

@@ -90,3 +90,10 @@ def gen_leaving_pit_lane_message(driver):
 	]
 	
 	return random.choice(messages)
+
+def gen_entering_pit_lane_message(driver):
+	messages = [ 
+		f"{driver} dives into the pits!"
+	]
+	
+	return random.choice(messages)
